@@ -1,5 +1,3 @@
-
-
 **Woodberry Forest School's 2026 USAYPT Problem 4 Simulation**
 ===========================================================
 
