@@ -141,8 +141,6 @@ class Simulator:
 
             # Sanity: ensure no NaNs
             if np.isnan(r_c).any() or np.isnan(v_c).any() or np.isnan(w_c).any():
-                # Skip this collision if interpolation produced NaNs (shouldn't happen)
-                # Accept full step to try to recover numerically
                 t += self.dt
                 r, v, w = r_next, v_next, w_next
                 times.append(t); traj.append(r.copy()); seg_ids.append(seg)

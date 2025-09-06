@@ -7,9 +7,7 @@ def hat(v):
     n = np.linalg.norm(v)
     return v / n if n > 0 else v
 
-# -----------------------------
 # Surfaces
-# -----------------------------
 class Plane:
     """Finite square plane (center r0, unit normal n, half-size 'size')."""
     def __init__(self, r0, n, name="plane", size=5.0):
@@ -41,9 +39,7 @@ class Plane:
     def normal(self, r):
         return self.n
 
-# -----------------------------
-# Ball + Aerodynamics
-# -----------------------------
+# Ball and aerodynamics
 class Ball:
     def __init__(self, m=0.045, R=0.021, I_type="solid"):
         self.m = float(m)
@@ -66,9 +62,7 @@ class Aero:
         self.Cm = float(Cm)
         self.wind = np.array(wind, dtype=float)
 
-# -----------------------------
 # Forces and torques
-# -----------------------------
 def forces_and_torque(r, v, w, ball, aero, g_vec=np.array([0.0, 0.0, -9.81])):
     """Return F (3,) and tau (3,) acting on ball. z-axis is vertical here (consistent with main).
        Note: main uses z as vertical, so gravity is -9.81 in z.
@@ -77,7 +71,7 @@ def forces_and_torque(r, v, w, ball, aero, g_vec=np.array([0.0, 0.0, -9.81])):
     v_rel = v - aero.wind
     Vmag = np.linalg.norm(v_rel)
 
-    # gravity (downwards in z), buoyancy opposing gravity
+    # gravity (acting on negative z), buoyancy (acting on positive z)
     Fg = m * g_vec
     Fb = -aero.rho * Vball * g_vec
 
@@ -104,9 +98,7 @@ def forces_and_torque(r, v, w, ball, aero, g_vec=np.array([0.0, 0.0, -9.81])):
     F = Fg + Fb + Fd + Fm
     return F, tau_air
 
-# -----------------------------
 # Integrator (RK4)
-# -----------------------------
 def rk4_step(state, dt, deriv):
     r, v, w = state
     def add(s, k, a):
@@ -120,9 +112,7 @@ def rk4_step(state, dt, deriv):
     dw = (k1[2] + 2*k2[2] + 2*k3[2] + k4[2]) * (dt/6.0)
     return (r + dr, v + dv, w + dw)
 
-# -----------------------------
 # Collision impulse (sphere vs massive surface)
-# -----------------------------
 def collide(v_in, w_in, n, ball, e_n=0.5, mu=0.2):
     """Return v_out, w_out after instantaneous contact with surface having unit normal n.
        Uses normal restitution e_n and Coulomb friction mu. The contact point is at -R*n.
