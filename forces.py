@@ -155,3 +155,23 @@ def collide(v_in, w_in, n, ball, e_n=0.5, mu=0.2):
     w_out = w_in + dw
 
     return v_out, w_out
+
+class SphereSurface:
+    """Spherical surface obstacle (center c, radius Rs)."""
+    def __init__(self, c, Rs, name="sphere"):
+        self.c = np.array(c, dtype=float)
+        self.Rs = float(Rs)
+        self.name = name
+
+    def gap(self, r, R):
+        """Signed gap: distance between ball center and sphere surface minus (Rs + R)."""
+        d = np.linalg.norm(r - self.c)
+        return d - (self.Rs + R)
+
+    def normal(self, r):
+        """Normal points outward from sphere center to contact point."""
+        diff = r - self.c
+        nrm = np.linalg.norm(diff)
+        if nrm < 1e-12:
+            return np.array([0.0, 0.0, 1.0])  # fallback
+        return diff / nrm

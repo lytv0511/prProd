@@ -1,8 +1,16 @@
 # main.py
 import numpy as np
 import matplotlib.pyplot as plt
-from forces import Ball, Aero, Plane
+from forces import Ball, Aero, Plane, SphereSurface
 from bouncesim import Simulator
+
+def plot_sphere(ax, c, Rs, color='green', alpha=0.3, resolution=30):
+    u = np.linspace(0, 2*np.pi, resolution)
+    v = np.linspace(0, np.pi, resolution)
+    x = c[0] + Rs * np.outer(np.cos(u), np.sin(v))
+    y = c[1] + Rs * np.outer(np.sin(u), np.sin(v))
+    z = c[2] + Rs * np.outer(np.ones_like(u), np.cos(v))
+    ax.plot_surface(x, y, z, color=color, alpha=alpha, linewidth=0, shade=True)
 
 def plot_plane(ax, r0, n, size=5.0, color='blue', alpha=0.3):
     n = np.array(n, dtype=float)
@@ -45,7 +53,17 @@ if __name__ == "__main__":
     # plane2 after bouncing from plane1
     plane2 = Plane(r0=(6.0, 0.5, 5.5), n=(0.866, 0.5, 0.0), name="plane2", size=plane_size)
 
-    surfaces = [plane1, plane2]
+    # Define the spherical obstacle
+    sphere1 = SphereSurface(c=(5.0, 8.0, 0.0), Rs=2.0, name="sphere1")
+
+    # Add it to surfaces
+    surfaces = [plane1, plane2, sphere1]
+
+    # Run sim (no changes needed!)
+    sim = Simulator(ball=ball, aero=aero, surfaces=surfaces, e_n=0.45, mu=0.35,
+                    dt=1e-4, t_max=6.0, max_bounces=20)
+
+    # Plot it
 
     # wood is relatively inelastic: e_n ~ 0.45, moderate friction mu ~ 0.35
     sim = Simulator(ball=ball, aero=aero, surfaces=surfaces, e_n=0.45, mu=0.35,
@@ -60,7 +78,7 @@ if __name__ == "__main__":
         #     print(f"Near plane2 at t={times[i]:.4f}s, r={r}, normal-dist={dist:.4f}")
 
     # Result in text
-    required_order = ["plane1", "plane2"]
+    required_order = ["plane1", "plane2", "sphere1"]
     bounce_names = [name for (_, name, _) in bounces]
     failed = False
     last_idx = -1
@@ -89,6 +107,7 @@ if __name__ == "__main__":
     # Trajectory and surfaces
     fig = plt.figure(figsize=(10,6))
     ax = fig.add_subplot(111, projection='3d')
+    plot_sphere(ax, sphere1.c, sphere1.Rs, color='green', alpha=0.4)
     ax.plot(traj[:,0], traj[:,1], traj[:,2], lw=2, label='trajectory')
     ax.scatter(start_pos[0], start_pos[1], start_pos[2], color='red', s=60, label='start')
 
