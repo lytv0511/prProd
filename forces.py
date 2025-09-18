@@ -113,7 +113,7 @@ def rk4_step(state, dt, deriv):
     return (r + dr, v + dv, w + dw)
 
 # Collision impulse (sphere vs massive surface)
-def collide(v_in, w_in, n, ball, e_n=0.5, mu=0.2):
+def collide(v_in, w_in, n, ball, e_n=0.8, mu=0.2):
     """Return v_out, w_out after instantaneous contact with surface having unit normal n.
        Uses normal restitution e_n and Coulomb friction mu. The contact point is at -R*n.
     """
